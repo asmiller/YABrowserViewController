@@ -50,6 +50,10 @@ IB_DESIGNABLE
 /// Delegate for listening for messages
 @property (nonatomic, weak) id<YABrowserViewControllerDelegate> delegate;
 
+/// Allow setting a process pool
+@property (assign, nonatomic) WKProcessPool processPool;
+
+
 /// Additional configuratino options
 @property (assign, nonatomic) BOOL hideBarOnSwipe;
 @property (assign, nonatomic) BOOL hideShareButton;

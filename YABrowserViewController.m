@@ -32,7 +32,7 @@
 @synthesize hideShareButton;
 @synthesize hideSubtitle;
 @synthesize delegate;
-
+@synthesize processPool;
 
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -406,6 +406,10 @@ static void * KVOContext = &KVOContext;
     
     [contentController addScriptMessageHandler:self name:@"observe"];
     configuration.userContentController = contentController;
+    
+    if (self.processPool) {
+        configuration.processPool = self.processPool;
+    }
     
     WKWebView *webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:configuration];
     webView.backgroundColor = [UIColor whiteColor];
