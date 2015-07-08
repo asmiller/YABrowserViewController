@@ -21,12 +21,15 @@
 @property (strong, nonatomic) UILongPressGestureRecognizer *longPressBack;
 
 @property (assign, nonatomic) BOOL toolbarWasHidden;
+@property (assign, nonatomic) BOOL hideBarOnSwipe;
+@property (assign, nonatomic) BOOL showSharebutton;
 
 @end
 
 @implementation YABrowserViewController
 
 @synthesize URLString = _URLString;
+@synthesize hideBarOnSwipe;
 
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -87,7 +90,8 @@ static void CommonInit(YABrowserViewController *self)
     [self reloadBarButtonItems];
     
     UINavigationController *navigation = self.navigationController ?: [[UINavigationController alloc] initWithRootViewController:self];
-    navigation.hidesBarsOnSwipe = YES;
+    navigation.hidesBarsOnSwipe = hideBarOnSwipe;
+    
     [presentingViewController presentViewController:navigation animated:animated completion:completion];
 }
 
@@ -292,7 +296,9 @@ static void CommonInit(YABrowserViewController *self)
         self.navigationItem.leftBarButtonItems = leftItems;
         
         NSMutableArray *rightItems = [NSMutableArray new];
-        [rightItems addObject:self.shareButton];
+        if(self.showSharebutton){
+            [rightItems addObject:self.shareButton];
+        }
         if ([self isViewLoaded] && self.webView.loading) {
             [rightItems addObject:self.stopButton];
         } else {
@@ -306,7 +312,16 @@ static void CommonInit(YABrowserViewController *self)
         
         NSMutableArray *toolbarItems = [NSMutableArray new];
         UIBarButtonItem * (^flexibleItem)() = ^{ return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil]; };
-        [toolbarItems addObjectsFromArray:@[self.backButton, flexibleItem(), self.forwardButton, flexibleItem(), self.shareButton, flexibleItem()]];
+        
+        NSMutableArray *buttons = [@[self.backButton, flexibleItem(), self.forwardButton, flexibleItem()] mutableCopy];
+        
+        if(self.showSharebutton){
+            [buttons addObject:self.shareButton];
+        }
+        
+        [buttons addObject:flexibleItem()];
+        
+        [toolbarItems addObjectsFromArray:buttons];
         if ([self isViewLoaded] && self.webView.loading) {
             [toolbarItems addObject:self.stopButton];
         } else {
@@ -380,7 +395,13 @@ static void * KVOContext = &KVOContext;
 
 - (void)loadView
 {
-    WKWebView *webView = [WKWebView new];
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    WKUserContentController *contentController = [[WKUserContentController alloc] init];
+    
+    [contentController addScriptMessageHandler:self name:@"observe"];
+    configuration.userContentController = contentController;
+    
+    WKWebView *webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:configuration];
     webView.backgroundColor = [UIColor whiteColor];
     webView.allowsBackForwardNavigationGestures = YES;
     webView.navigationDelegate = self;
@@ -564,6 +585,14 @@ static void * KVOContext = &KVOContext;
     
     self.title = [coder decodeObjectForKey:TitleKey];
     self.URLString = [coder decodeObjectForKey:URLStringKey];
+}
+
+#pragma mark - WKScriptMessageHandler
+-(void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
+{
+    if ([message.name isEqualToString:@"closeWindow"]) {
+        [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 static NSString * const TitleKey = @"title";

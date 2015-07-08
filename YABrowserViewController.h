@@ -11,7 +11,7 @@
  If you set the browser view controller's restorationIdentifier, its title and current page's URL are preserved and restored. Unfortunately it does not seem to be possible to preserve the browser history.
  */
 IB_DESIGNABLE
-@interface YABrowserViewController : UIViewController <UIViewControllerRestoration, WKNavigationDelegate, WKUIDelegate>
+@interface YABrowserViewController : UIViewController <UIViewControllerRestoration, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler>
 
 /**
  The current page's absolute URL as a string.
