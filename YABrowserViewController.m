@@ -92,6 +92,9 @@ static void CommonInit(YABrowserViewController *self)
     UINavigationController *navigation = self.navigationController ?: [[UINavigationController alloc] initWithRootViewController:self];
     navigation.hidesBarsOnSwipe = hideBarOnSwipe;
     
+    navigation.modalPresentationStyle = self.modalPresentationStyle;
+    navigation.modalTransitionStyle = self.modalTransitionStyle;
+    
     [presentingViewController presentViewController:navigation animated:animated completion:completion];
 }
 
