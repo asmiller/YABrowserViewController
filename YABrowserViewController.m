@@ -21,8 +21,7 @@
 @property (strong, nonatomic) UILongPressGestureRecognizer *longPressBack;
 
 @property (assign, nonatomic) BOOL toolbarWasHidden;
-@property (assign, nonatomic) BOOL hideBarOnSwipe;
-@property (assign, nonatomic) BOOL showSharebutton;
+
 
 @end
 

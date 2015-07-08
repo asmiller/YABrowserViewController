@@ -38,4 +38,8 @@ IB_DESIGNABLE
 /// An array of UIActivity objects to add to the share sheet. Default is nil.
 @property (copy, nonatomic) NSArray *applicationActivities;
 
+/// Additional configuratino options
+@property (assign, nonatomic) BOOL hideBarOnSwipe;
+@property (assign, nonatomic) BOOL showSharebutton;
+
 @end
