@@ -51,7 +51,7 @@ IB_DESIGNABLE
 @property (nonatomic, weak) id<YABrowserViewControllerDelegate> delegate;
 
 /// Allow setting a process pool
-@property (assign, nonatomic) WKProcessPool processPool;
+@property (assign, nonatomic) WKProcessPool* processPool;
 
 
 /// Additional configuratino options
