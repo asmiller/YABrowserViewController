@@ -3,6 +3,15 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
+
+
+@protocol YABrowserViewControllerDelegate <NSObject>
+
+- (void) messageReceived:(WKScriptMessage *)message;
+
+@end
+
+
 /**
  A slimmed-down, poorer rendition of Safari. (Yet Another Browser View Controller)
  
@@ -38,8 +47,13 @@ IB_DESIGNABLE
 /// An array of UIActivity objects to add to the share sheet. Default is nil.
 @property (copy, nonatomic) NSArray *applicationActivities;
 
+/// Delegate for listening for messages
+@property (nonatomic, weak) id<YABrowserViewControllerDelegate> delegate;
+
 /// Additional configuratino options
 @property (assign, nonatomic) BOOL hideBarOnSwipe;
-@property (assign, nonatomic) BOOL showSharebutton;
+@property (assign, nonatomic) BOOL hideShareButton;
+@property (assign, nonatomic) BOOL hideSubtitle;
+
 
 @end

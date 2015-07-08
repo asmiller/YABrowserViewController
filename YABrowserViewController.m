@@ -29,6 +29,10 @@
 
 @synthesize URLString = _URLString;
 @synthesize hideBarOnSwipe;
+@synthesize hideShareButton;
+@synthesize hideSubtitle;
+@synthesize delegate;
+
 
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -135,7 +139,7 @@ static void CommonInit(YABrowserViewController *self)
                                                                                          NSParagraphStyleAttributeName: paragraphStyle}]];
     }
     
-    if (self.URLString.length > 0) {
+    if (self.URLString.length > 0 && !self.hideSubtitle) {
         [titleString.mutableString appendString:@"\n"];
         
         UIFont *URLFont;
@@ -289,7 +293,7 @@ static void CommonInit(YABrowserViewController *self)
 {
     // Order is important here: add the items to their bar first, otherwise the gesture recognizer doesn't stick to the view.
     
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && self.modalPresentationStyle != UIModalPresentationFormSheet) {
         NSMutableArray *leftItems = [NSMutableArray new];
         if (self.closeButton) {
             [leftItems addObject:self.closeButton];
@@ -298,7 +302,7 @@ static void CommonInit(YABrowserViewController *self)
         self.navigationItem.leftBarButtonItems = leftItems;
         
         NSMutableArray *rightItems = [NSMutableArray new];
-        if(self.showSharebutton){
+        if(!self.hideShareButton){
             [rightItems addObject:self.shareButton];
         }
         if ([self isViewLoaded] && self.webView.loading) {
@@ -317,7 +321,7 @@ static void CommonInit(YABrowserViewController *self)
         
         NSMutableArray *buttons = [@[self.backButton, flexibleItem(), self.forwardButton, flexibleItem()] mutableCopy];
         
-        if(self.showSharebutton){
+        if(!self.hideShareButton){
             [buttons addObject:self.shareButton];
         }
         
@@ -592,8 +596,8 @@ static void * KVOContext = &KVOContext;
 #pragma mark - WKScriptMessageHandler
 -(void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
 {
-    if ([message.name isEqualToString:@"closeWindow"]) {
-        [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    if ([delegate respondsToSelector:@selector(messageReceived:)]){
+        [delegate messageReceived:message];
     }
 }
 
